@@ -7,7 +7,7 @@ DungeonBulder is a tool to help Dungeons&Dragons DM's to build their adventures.
 
 ## Movivation
 
-##Technologies Used
+## Technologies Used
 * Frontend: React
 * Additional Tools: Redux
 
