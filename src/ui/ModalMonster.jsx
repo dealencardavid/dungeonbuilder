@@ -1,31 +1,23 @@
 import { FiPlus } from "react-icons/fi";
 import Btn from "./Btn";
-import { useMonstersDetails } from "../features/useMonsterDetails";
-// import Loader from "./Loader";
+import { useDispatch } from "react-redux";
+import { addMonsterToEncounter } from "../features/encounters/encountersSlice";
 
-function ModalMonster({ name }) {
-  const { monsterDetails, isLoading } = useMonstersDetails(name);
+function ModalMonster({ name, monsterIndex, encounterId }) {
+  // Dispatch
+  const dispatch = useDispatch();
 
-  if (isLoading) return <div className="py-2">Loading...</div>;
+  function addMonster() {
+    dispatch(addMonsterToEncounter({ encounterId, monsterIndex }));
+  }
 
   return (
-    <div className="grid grid-cols-[1fr_1fr_48px] py-2 items-end">
+    <div className="grid grid-cols-[1fr_50px] py-2 items-center">
       <div className="flex flex-col">
-        <p className="text-black text-sm font-medium">{monsterDetails.name}</p>
-        <p className="text-mainOrange-500 text-xs font-light capitalize">
-          {monsterDetails.type}
-        </p>
+        <p className="text-black text-sm font-medium">{name}</p>
       </div>
-      <div>
-        <p className="text-black text-xs font-light">
-          CR:{" "}
-          <span className="font-medium">{monsterDetails.challenge_rating}</span>
-        </p>
-        <p className="text-black text-xs font-light">
-          XP: <span className="font-medium">{monsterDetails.xp}</span>
-        </p>
-      </div>
-      <Btn size="light" color="light">
+
+      <Btn size="light" color="light" callback={addMonster}>
         <FiPlus />
       </Btn>
     </div>

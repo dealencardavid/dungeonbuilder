@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import builderReducer from "./features/builder/builderSlice";
+import encountersReducer from "./features/encounters/encountersSlice";
+import monstersReducer from "./features/monsters/monstersSlice";
+import partyReducer from "./features/party/partySlice";
 
 const store = configureStore({
   reducer: {
-    builder: builderReducer,
+    encounters: encountersReducer,
+    monsters: monstersReducer,
+    party: partyReducer,
   },
 });
 

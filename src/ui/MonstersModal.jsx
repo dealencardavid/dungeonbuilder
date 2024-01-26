@@ -3,19 +3,25 @@ import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
 
 import ModalMonster from "./ModalMonster";
 import { useEffect, useState } from "react";
-import { useMonsters } from "../features/useMonsters";
+
 import { RESULTS_PER_PAGE } from "../configs/config";
-import Loader from "./Loader";
+
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 function MonstersModal({ isOpen, setIsOpen }) {
-  const [query, setQuery] = useState("");
-  const { monsters, isLoading } = useMonsters(query);
-  const [currentPage, setCurrentPage] = useState(1);
+  // Retrieve the current encounterId
+  const { encounterId } = useParams();
+  // Fetch monsters array from State
+  const { monsters } = useSelector((state) => state.monsters);
 
+  const [query, setQuery] = useState("");
+
+  // Pagination Logic
+  const [currentPage, setCurrentPage] = useState(1);
   const maxPages = Math.ceil(monsters.length / RESULTS_PER_PAGE);
   const lastMonsterIndex = currentPage * RESULTS_PER_PAGE;
   const firstMonsterIndex = lastMonsterIndex - RESULTS_PER_PAGE;
-  const searchResults = monsters.slice(firstMonsterIndex, lastMonsterIndex);
 
   function prevPage() {
     if (currentPage === 1) return;
@@ -26,6 +32,22 @@ function MonstersModal({ isOpen, setIsOpen }) {
     setCurrentPage((prevPage) => prevPage + 1);
   }
 
+  // Filtering
+  const filteredMonsters = monsters
+    .filter((monster) =>
+      monster.name.toLowerCase().includes(query.toLowerCase())
+    )
+    .slice(firstMonsterIndex, lastMonsterIndex);
+
+  // Set page to 1 if query changes
+  useEffect(
+    function () {
+      setCurrentPage(1);
+    },
+    [query]
+  );
+
+  // Clean up
   useEffect(
     function () {
       setQuery("");
@@ -66,17 +88,18 @@ function MonstersModal({ isOpen, setIsOpen }) {
                 onChange={(e) => setQuery(e.target.value)}
               />
               <div className="w-full rounded-lg bg-white px-4 py-2 border border-black shadow-container flex flex-col divide-y-[0.5px] divide-dashed divide-black">
-                <div className="grid grid-cols-[1fr_1fr_48px] mb-2">
+                <div className="grid grid-cols-[1fr_50px] mb-2">
                   <p>Name</p>
-                  <p className="">CR</p>
+                  <p className="">Add</p>
                 </div>
-                {isLoading ? (
-                  <Loader />
-                ) : (
-                  searchResults.map((monster, index) => (
-                    <ModalMonster key={index} name={monster.index} />
-                  ))
-                )}
+                {filteredMonsters.map((monster, index) => (
+                  <ModalMonster
+                    key={index}
+                    name={monster.name}
+                    monsterIndex={monster.index}
+                    encounterId={encounterId}
+                  />
+                ))}
               </div>
               <div className="flex gap-1 items-center text-white">
                 <button
