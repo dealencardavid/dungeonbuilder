@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 const MONSTERS_API_ENDPOINT = "https://www.dnd5eapi.co/api/monsters/";
 
-// creating Thunk
 export const fetchMonsters = createAsyncThunk(
   "monsters/fetchMonsters",
   async function () {

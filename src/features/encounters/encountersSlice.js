@@ -27,10 +27,10 @@ export const addMonsterToEncounter = createAsyncThunk(
 );
 
 const initialState = {
-  encounters: [{ id: 1, monsters: [], xpSum: 0, xpAdjusted: 0 }],
+  encounters: [{ id: 0, monsters: [], xpSum: 0, xpAdjusted: 0 }],
 };
 
-let nextEncounterId = 2;
+let nextEncounterId = 1;
 
 const encountersSlice = createSlice({
   name: "encounters",
@@ -41,8 +41,110 @@ const encountersSlice = createSlice({
         id: nextEncounterId++,
         monsters: [],
         xpSum: 0,
+        xpAdjusted: 0,
       };
       return { ...state, encounters: [...state.encounters, newEncounter] };
+    },
+    incrementMonster(state, action) {
+      const { encounterId, monsterIndex } = action.payload;
+
+      const targetMonster = state.encounters[encounterId].monsters.findIndex(
+        (monster) => monster.details.index === monsterIndex
+      );
+
+      if (targetMonster === -1) return { ...state };
+
+      const newEncounters = [...state.encounters].map((encounter) => {
+        if (encounter.id === encounterId) {
+          const decrementedMonsters = encounter.monsters.map((monster, i) =>
+            i === targetMonster
+              ? { ...monster, quantity: Math.max(monster.quantity + 1, 1) }
+              : monster
+          );
+
+          return {
+            ...encounter,
+            monsters: decrementedMonsters,
+          };
+        }
+
+        return encounter;
+      });
+
+      const updatedEncounters = newEncounters.map((encounter) => {
+        return {
+          ...encounter,
+          xpSum: calculateXPSum(encounter.monsters),
+          xpAdjusted: calculateAdjustedXPSum(encounter.monsters),
+        };
+      });
+
+      return { ...state, encounters: updatedEncounters };
+    },
+    decrementMonster(state, action) {
+      const { encounterId, monsterIndex } = action.payload;
+
+      const targetMonster = state.encounters[encounterId].monsters.findIndex(
+        (monster) => monster.details.index === monsterIndex
+      );
+
+      if (targetMonster === -1) return { ...state };
+
+      const newEncounters = [...state.encounters].map((encounter) => {
+        if (encounter.id === encounterId) {
+          const decrementedMonsters = encounter.monsters.map((monster, i) =>
+            i === targetMonster
+              ? { ...monster, quantity: Math.max(monster.quantity - 1, 1) }
+              : monster
+          );
+
+          return {
+            ...encounter,
+            monsters: decrementedMonsters,
+          };
+        }
+
+        return encounter;
+      });
+
+      const updatedEncounters = newEncounters.map((encounter) => {
+        return {
+          ...encounter,
+          xpSum: calculateXPSum(encounter.monsters),
+          xpAdjusted: calculateAdjustedXPSum(encounter.monsters),
+        };
+      });
+
+      return { ...state, encounters: updatedEncounters };
+    },
+    deleteMonster(state, action) {
+      const { encounterId, monsterIndex } = action.payload;
+
+      const targetMonster = state.encounters[encounterId].monsters.findIndex(
+        (monster) => monster.details.index === monsterIndex
+      );
+
+      if (targetMonster === -1) return { ...state };
+
+      const newEncounters = [...state.encounters].map((encounter) => {
+        if (encounter.id === encounterId) {
+          return {
+            ...encounter,
+            monsters: encounter.monsters.filter((_, i) => i !== targetMonster),
+          };
+        }
+        return encounter;
+      });
+
+      const updatedEncounters = newEncounters.map((encounter) => {
+        return {
+          ...encounter,
+          xpSum: calculateXPSum(encounter.monsters),
+          xpAdjusted: calculateAdjustedXPSum(encounter.monsters),
+        };
+      });
+
+      return { ...state, encounters: updatedEncounters };
     },
     deleteEncounter(state, action) {
       state.encounters = state.encounters.filter(
@@ -54,60 +156,60 @@ const encountersSlice = createSlice({
     builder.addCase(addMonsterToEncounter.fulfilled, (state, action) => {
       const { encounterId, monsterIndex, monsterDetails } = action.payload;
 
-      // Find the target encounter
       const targetEncounterIndex = state.encounters.findIndex(
         (encounter) => encounter.id === parseInt(encounterId)
       );
-      // If the encounter is not found, return the original state
+
       if (targetEncounterIndex === -1) {
-        return state;
+        return { ...state };
       }
 
-      // Create a copy of the encounters array
-      const updatedEncounters = [...state.encounters];
-
-      // Find the target monster within the encounter
-      const targetMonsterIndex = updatedEncounters[
+      const targetMonsterIndex = state.encounters[
         targetEncounterIndex
       ].monsters.findIndex((monster) => monster.index === monsterIndex);
 
-      // Create a new state object with the updated encounters array
-      const newState = {
-        ...state,
-        encounters: updatedEncounters.map((encounter, index) => {
-          if (index === targetEncounterIndex) {
-            return {
-              ...encounter,
-              monsters:
-                targetMonsterIndex !== -1
-                  ? encounter.monsters.map((m, i) =>
-                      i === targetMonsterIndex
-                        ? { ...m, quantity: m.quantity + 1 }
-                        : m
-                    )
-                  : [
-                      ...encounter.monsters,
-                      {
-                        index: monsterIndex,
-                        quantity: 1,
-                        details: monsterDetails,
-                      },
-                    ],
-              xpSum: calculateXPSum(encounter.monsters, monsterDetails.xp),
-              xpAdjusted: calculateAdjustedXPSum(
-                encounter.monsters,
-                monsterDetails,
-                1
-              ),
-            };
-          }
-          return encounter;
-        }),
-      };
-      return newState;
+      const newEncounters = state.encounters.map((encounter, index) => {
+        if (index === targetEncounterIndex) {
+          return {
+            ...encounter,
+            monsters:
+              targetMonsterIndex !== -1
+                ? encounter.monsters.map((m, i) =>
+                    i === targetMonsterIndex
+                      ? { ...m, quantity: m.quantity + 1 }
+                      : m
+                  )
+                : [
+                    ...encounter.monsters,
+                    {
+                      index: monsterIndex,
+                      quantity: 1,
+                      details: monsterDetails,
+                    },
+                  ],
+          };
+        }
+        return encounter;
+      });
+
+      const updatedEncounters = newEncounters.map((encounter) => {
+        return {
+          ...encounter,
+          xpSum: calculateXPSum(encounter.monsters),
+          xpAdjusted: calculateAdjustedXPSum(encounter.monsters),
+        };
+      });
+
+      return { ...state, encounters: updatedEncounters };
     });
   },
 });
 
-export const { addEncounter, deleteEncounter } = encountersSlice.actions;
+export const {
+  addEncounter,
+  deleteEncounter,
+  incrementMonster,
+  decrementMonster,
+  deleteMonster,
+} = encountersSlice.actions;
 export default encountersSlice.reducer;

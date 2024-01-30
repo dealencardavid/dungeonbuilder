@@ -1,10 +1,11 @@
-import { FiPlus } from "react-icons/fi";
-import Btn from "./Btn";
 import { useDispatch } from "react-redux";
 import { addMonsterToEncounter } from "../features/encounters/encountersSlice";
 
+import { FiPlus } from "react-icons/fi";
+
+import Btn from "./Btn";
+
 function ModalMonster({ name, monsterIndex, encounterId }) {
-  // Dispatch
   const dispatch = useDispatch();
 
   function addMonster() {

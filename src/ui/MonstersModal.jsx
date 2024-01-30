@@ -1,20 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
-
-import ModalMonster from "./ModalMonster";
 import { useEffect, useState } from "react";
-
-import { RESULTS_PER_PAGE } from "../configs/config";
-
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-function MonstersModal({ isOpen, setIsOpen }) {
-  // Retrieve the current encounterId
-  const { encounterId } = useParams();
-  // Fetch monsters array from State
-  const { monsters } = useSelector((state) => state.monsters);
+import { RESULTS_PER_PAGE } from "../configs/config";
 
+import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
+
+import ModalMonster from "./ModalMonster";
+
+function MonstersModal({ isOpen, setIsOpen }) {
+  const { encounterId } = useParams();
+  const { monsters } = useSelector((state) => state.monsters);
   const [query, setQuery] = useState("");
 
   // Pagination Logic
