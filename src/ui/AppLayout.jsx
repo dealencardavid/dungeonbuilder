@@ -16,7 +16,7 @@ function AppLayout() {
   return (
     <div className=" h-dvh bg-mainBlue-500 flex sm:flex-col-reverse ">
       <div className="h-full bg-mainBege-500 rounded-r-3xl shadow-page px-3 py-6 grow overflow-auto sm:rounded-t-3xl sm:rounded-br-none sm:py-9 sm:px-6 md:px-9 lg:px-12 grid ">
-        <div className="max-w-5xl w-full mx-auto flex flex-col gap-8 sm:grid sm:grid-cols-2 sm:grid-rows-[80px_1fr] ">
+        <div className="max-w-3xl w-full mx-auto flex flex-col gap-8 ">
           <Outlet />
         </div>
       </div>
