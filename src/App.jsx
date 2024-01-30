@@ -23,8 +23,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route index element={<Navigate replace to="home" />} />
-          <Route path="home" element={<LandingPage />} />
+          <Route index element={<Navigate replace to="/home" />} />
+          <Route path="/home" element={<LandingPage />} />
           <Route path="/encounters/:encounterId" element={<EncounterPage />} />
           <Route path="*" element={<Navigate to="home" replace />} />
         </Route>
